@@ -3,34 +3,52 @@
 [![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13-blue)](https://www.python.org)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/optuna/optuna-mcp)
 
-The Optuna MCP Server is a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) server to interact with Optuna APIs.
+A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) server that automates optimization and anlysis using [Optuna](http://optuna.org).
 
 <img width="840" alt="image" src="./examples/sphere2d/images/sphere2d-6.png" />
 
 ## Use Cases
 
-- Hyperparameter Optimization driven by LLMs
-- Interactive analysis of Optuna's optimization history
+The Optuna MCP Server can be used in the following use cases, for example.
 
+- Automated hyperparameter optimization by LLMs
+- Interactive analysis of Optuna's optimization results via chat interface
+- Optimize input and output of other MCP tools
 
-## Prerequisites
-
-Before starting the installation process, ensure to:
-
-1. Install `uv` from [Astral](https://docs.astral.sh/uv/getting-started/installation/)
-2. After installing `uv`, execute the command `uv python install 3.12` to install Python 3.12 or a newer version.
-3. Lastly, add the server to your MCP client configuration.
+For details, see the [Examples section](#examples).
 
 ## Installation
-
-### Usage with Claude Desktop
 
 <!-- TODO(c-bata): Remove the following line after publishing to the PyPI and DockerHub-->
 
 *Please note that `optuna-mcp` does not exist on PyPI and DockerHub at the moment.*
 
+The Optuna MCP server can be installed using `uv` or Docker.
+This section explains how to install the Optuna MCP server, using Claude Desktop as an example MCP client.
+
+### Usage with uv
+
+Before starting the installation process, ensure to:
+
+1. Install `uv` from [Astral](https://docs.astral.sh/uv/getting-started/installation/)
+2. After installing `uv`, execute the command `uv python install 3.12` to install Python 3.12 or a newer version.
+
+Then, add the Optuna MCP server configuration to the MCP client.
 To include it in Claude Desktop, go to Claude > Settings > Developer > Edit Config > `claude_desktop_config.json`
 and add the following:
+
+```json
+{
+  "mcpServers": {
+    "Optuna": {
+      "command": "uvx",
+      "args": ["optuna-mcp"],
+    }
+  }
+}
+```
+
+Additionally, you can specify the Optuna storage with the `--storage` argument to persist the results.
 
 ```json
 {
@@ -50,44 +68,8 @@ and add the following:
 After adding this, please restart Claude Desktop application.
 For more information about Claude Desktop, check out [the quickstart page](https://modelcontextprotocol.io/quickstart/user).
 
-### Build from source
-
-<!-- TODO(c-bata): Change the git url after published to under the optuna org. -->
-
-For those who are interested in the version under development, you can manually clone the repository
-and install its dependencies as follows:
-
-```
-$ git clone git@github.com:optuna/optuna-mcp.git
-$ cd optuna-mcp
-$ uv sync   # Install dependencies
-$ pwd       # Check the path to your optuna-mcp directory.
-/PATH/TO/optuna-mcp
-$ which uv  # Check the path to your uv binary.
-/PATH/TO/uv
-```
-
-After cloning, include the path to your uv binary and optuna-mcp directory in your configuration as follows:
-
-```json
-{
-  "mcpServers": {
-    "Optuna": {
-      "command": "/PATH/TO/uv",
-      "args": [
-        "--directory",
-        "/PATH/TO/optuna-mcp",
-        "run",
-        "optuna-mcp"
-        "--storage",
-        "sqlite:///optuna.db"
-      ],
-    }
-  }
-}
-```
-
 ### Usage with Docker
+
 You can also run the Optuna MCP server using Docker. Make sure you have Docker installed and running on your machine.
 
 ```json
@@ -111,7 +93,11 @@ You can also run the Optuna MCP server using Docker. Make sure you have Docker i
 }
 ```
 
-## Tools
+## Tools provided by Optuna MCP
+
+The Optuna MCP provides the following tools.
+Specifically, it offers primitive functions of Optuna such as Study, Trial, Visualization, and Dashboard.
+Since MCP clients know the list of tools and the details of each tool, users do not need to remember those details.
 
 ### Study
 
