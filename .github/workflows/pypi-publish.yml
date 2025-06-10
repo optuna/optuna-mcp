@@ -1,0 +1,77 @@
+name: Publish distributions to PyPI or TestPyPI
+
+# TestPyPI upload is scheduled in each weekday.
+# PyPI upload is only activated if the release is published.
+on:
+  # schedule:
+  #   - cron: '0 15 * * SUN-THU'
+  release:
+    types:
+      - published
+
+jobs:
+  build-n-publish:
+    name: Build and publish Python distributions to PyPI or TestPyPI
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    # Not intended for forks.
+    if: github.repository == 'optuna/optuna-mcp'
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: Install twine
+      run: |
+        uv pip install twine wheel build
+
+    - name: Output installed packages
+      run: |
+        uv pip freeze
+
+    - name: Output dependency tree
+      run: |
+        uv pip install pipdeptree
+        pipdeptree
+
+    - name: Change the version file for scheduled TestPyPI upload
+      if: github.event_name == 'schedule'
+      run: |
+        OPTUNA_MCP_VERSION=$(cut -d '"' -f 2 optuna_mcp/version.py)
+        DATE=`date +"%Y%m%d"`
+        echo "__version__ = \"${OPTUNA_MCP_VERSION}${DATE}\"" > optuna_mcp/version.py
+
+    - name: Build a tar ball
+      run: |
+        uv run python -m build --sdist --wheel
+
+    - name: Verify the distributions
+      run: uv run twine check dist/*
+
+    - name: Publish distribution to TestPyPI
+      # The following upload action cannot be executed in the forked repository.
+      if: (github.event_name == 'schedule') || (github.event_name == 'release')
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+
+    - name: Publish distribution to PyPI
+      # The following upload action cannot be executed in the forked repository.
+      if: github.event_name == 'release'
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        # Temporary workaround to bypass Twine's bug with attestation support
+        # See https://github.com/pypa/gh-action-pypi-publish/issues/283
+        # TODO(c-bata): Once a new version of twine is released, delete this line.
+        # https://github.com/pypa/twine/pull/1172
+        attestations: false

@@ -1,0 +1,55 @@
+name: "\U0001F41BBug report"
+description: Create a report to help us improve Optuna MCP.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! Please write a clear and concise description of what the bug is.
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: Please write a clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Please provide your environment information and your MCP client such as ChatGPT and Claude.
+      value: |
+        - MCP Client:
+        - OS:
+    validations:
+      required: true
+  - type: textarea
+    id: settings
+    attributes:
+      label: Settings
+      description: |
+        If you are using optuna-mcp via Docker, please give us the following information.
+        ```
+        docker images optuna-mcp
+        ```
+        If you are using optuna-mcp via uvx, please give us the following information.
+        ```
+        uv pip freeze
+        ```
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error messages, stack traces, logs, or screenshots
+      description: Please provide the error message.
+      render: shell
+    validations:
+       required: false
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context (optional)
+      description: Please provide additional contexts if you have.
+    validations:
+      required: false

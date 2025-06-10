@@ -1,0 +1,10 @@
+# Ignore everything
+**
+
+!pyproject.toml
+!uv.lock
+!README.md
+!LICENSE
+!optuna_mcp
+
+**/__pycache__

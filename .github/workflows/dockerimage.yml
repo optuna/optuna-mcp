@@ -1,0 +1,67 @@
+name: Build Docker Image
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+  pull_request:
+    paths:
+      - .dockerignore
+      - .github/workflows/dockerimage.yml
+      - Dockerfile
+      - pyproject.toml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.run_number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOCKER_HUB_BASE_NAME: optuna/optuna-mcp
+
+jobs:
+
+  dockerimage:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python_version: ['3.12']
+
+    # This action cannot be executed in the forked repository.
+    if: github.repository == 'optuna/optuna-mcp'
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set ENV
+      run: |
+        export TAG_NAME="py${{ matrix.python_version }}"
+        if [ "${{ github.event_name }}" = 'release' ]; then
+          export TAG_NAME="${{ github.event.release.tag_name }}-${TAG_NAME}"
+        fi
+        echo "HUB_TAG=${DOCKER_HUB_BASE_NAME}:${TAG_NAME}" >> $GITHUB_ENV
+
+    - name: Build the Docker image
+      run: |
+        if [ "${{ github.event_name }}" = 'release' ]; then
+          CACHE_FROM=""
+        else
+          CACHE_FROM="--cache-from=${HUB_TAG}"
+        fi
+        docker build ${CACHE_FROM} . --build-arg PYTHON_VERSION=${{ matrix.python_version }} --file Dockerfile --tag "${HUB_TAG}"
+      env:
+        DOCKER_BUILDKIT: 1
+
+    - name: Verify the built image
+      run: |
+        docker run "${HUB_TAG}" optuna-mcp -h
+
+    - name: Login & Push to Docker Hub
+      if: ${{ github.event_name != 'pull_request' }}
+      env:
+        DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+      run: |
+        echo "${DOCKER_HUB_TOKEN}" | docker login -u optunabot --password-stdin
+        docker push "${HUB_TAG}"
