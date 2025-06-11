@@ -57,6 +57,16 @@ include = ["optuna_mcp*"]
   "py.typed",
 ]
 
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu" },
+]
+
 [tool.ruff]
 line-length = 99
 target-version = "py312"
