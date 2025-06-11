@@ -19,10 +19,6 @@ For details, see the [Examples section](#examples).
 
 ## Installation
 
-<!-- TODO(c-bata): Remove the following line after publishing to the PyPI and DockerHub-->
-
-*Please note that `optuna-mcp` does not exist on PyPI and DockerHub at the moment.*
-
 The Optuna MCP server can be installed using `uv` or Docker.
 This section explains how to install the Optuna MCP server, using Claude Desktop as an example MCP client.
 
