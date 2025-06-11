@@ -35,7 +35,11 @@ and add the following:
   "mcpServers": {
     "Optuna": {
       "command": "uvx",
-      "args": ["optuna-mcp"],
+      "args": [
+        "--from",
+        "git+https://github.com/optuna/optuna-mcp",
+        "optuna-mcp"
+      ]
     }
   }
 }
@@ -49,10 +53,12 @@ Additionally, you can specify the Optuna storage with the `--storage` argument t
     "Optuna": {
       "command": "uvx",
       "args": [
-        "optuna-mcp",
+        "--from",
+        "git+https://github.com/optuna/optuna-mcp",
+        "optuna-mcp"
         "--storage",
         "sqlite:///optuna.db"
-      ],
+      ]
     }
   }
 }
