@@ -28,10 +28,7 @@ This section explains how to install the Optuna MCP server, using Claude Desktop
 
 ### Usage with uv
 
-Before starting the installation process, ensure to:
-
-1. Install `uv` from [Astral](https://docs.astral.sh/uv/getting-started/installation/)
-2. After installing `uv`, execute the command `uv python install 3.12` to install Python 3.12 or a newer version.
+Before starting the installation process, install `uv` from [Astral](https://docs.astral.sh/uv/getting-started/installation/).
 
 Then, add the Optuna MCP server configuration to the MCP client.
 To include it in Claude Desktop, go to Claude > Settings > Developer > Edit Config > `claude_desktop_config.json`
