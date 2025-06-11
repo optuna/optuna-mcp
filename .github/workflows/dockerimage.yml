@@ -65,3 +65,13 @@ jobs:
       run: |
         echo "${DOCKER_HUB_TOKEN}" | docker login -u optunabot --password-stdin
         docker push "${HUB_TAG}"
+
+    # Assume python_version is only 3.12.
+    - name: Tag and Push latest image
+      if: ${{ github.event_name == 'release' }}
+      env:
+        DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+      run: |
+        echo "${DOCKER_HUB_TOKEN}" | docker login -u optunabot --password-stdin
+        docker tag "${HUB_TAG}" "${DOCKER_HUB_BASE_NAME}:latest"
+        docker push "${DOCKER_HUB_BASE_NAME}:latest"
