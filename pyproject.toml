@@ -28,6 +28,7 @@ dependencies = [
     "pandas>=2.2.3",
     "plotly>=6.0.1",
     "torch>=2.7.0",
+    "bottle @ git+https://github.com/bottlepy/bottle.git@master",
 ]
 
 [project.scripts]

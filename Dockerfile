@@ -9,6 +9,8 @@ ENV UV_LINK_MODE=copy
 
 COPY pyproject.toml uv.lock /app/
 
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+
 RUN uv sync --frozen --no-install-project --no-dev --no-editable
 
 COPY . /app/
