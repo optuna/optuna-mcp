@@ -3,8 +3,8 @@ name: Publish distributions to PyPI or TestPyPI
 # TestPyPI upload is scheduled in each weekday.
 # PyPI upload is only activated if the release is published.
 on:
-  # schedule:
-  #   - cron: '0 15 * * SUN-THU'
+  schedule:
+    - cron: '0 15 * * SUN-THU'
   release:
     types:
       - published
@@ -30,6 +30,9 @@ jobs:
       uses: astral-sh/setup-uv@v3
       with:
         version: "latest"
+
+    - name: Setup venv
+      run: uv venv
 
     - name: Install twine
       run: |
