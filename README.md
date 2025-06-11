@@ -1,5 +1,8 @@
 # Optuna MCP Server
 
+[![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13-blue)](https://www.python.org)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/optuna/optuna-mcp)
+
 The Optuna MCP Server is a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) server to interact with Optuna APIs.
 
 <img width="840" alt="image" src="./examples/sphere2d/images/sphere2d-6.png" />
