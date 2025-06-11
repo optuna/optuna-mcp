@@ -45,7 +45,7 @@ jobs:
     - name: Output dependency tree
       run: |
         uv pip install pipdeptree
-        pipdeptree
+        uv run pipdeptree
 
     - name: Change the version file for scheduled TestPyPI upload
       if: github.event_name == 'schedule'
