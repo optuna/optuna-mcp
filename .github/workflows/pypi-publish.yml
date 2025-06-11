@@ -8,7 +8,6 @@ on:
   release:
     types:
       - published
-  pull_request: {}
 
 jobs:
   build-n-publish:
@@ -18,7 +17,7 @@ jobs:
       id-token: write
 
     # Not intended for forks.
-    if: github.repository == 'HideakiImamura/optuna-mcp'
+    if: github.repository == 'optuna/optuna-mcp'
 
     steps:
     - uses: actions/checkout@v4
