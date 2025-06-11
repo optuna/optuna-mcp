@@ -34,7 +34,7 @@ jobs:
         if [ "${{ github.event_name }}" = 'release' ]; then
           export TAG_NAME="${{ github.event.release.tag_name }}"
         fi
-        echo "HUB_TAG=${DOCKER_HUB_BASE_NAME}:${TAG_NAME}" >> $GITHUB_ENV
+        echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
 
     - name: Login to Docker Hub
       if: ${{ github.event_name == 'release' }}
@@ -56,5 +56,5 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name == 'release' }}
         tags: |
-          "${HUB_TAG}"
-          "${DOCKER_HUB_BASE_NAME}:latest"
+          ${{ env.DOCKER_HUB_BASE_NAME }}:${{ env.TAG_NAME }}
+          ${{ env.DOCKER_HUB_BASE_NAME }}:latest
