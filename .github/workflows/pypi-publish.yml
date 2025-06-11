@@ -8,6 +8,7 @@ on:
   release:
     types:
       - published
+  pull_request: {}
 
 jobs:
   build-n-publish:
@@ -17,7 +18,7 @@ jobs:
       id-token: write
 
     # Not intended for forks.
-    if: github.repository == 'optuna/optuna-mcp'
+    if: github.repository == 'HideakiImamura/optuna-mcp'
 
     steps:
     - uses: actions/checkout@v4
@@ -45,7 +46,7 @@ jobs:
     - name: Output dependency tree
       run: |
         uv pip install pipdeptree
-        pipdeptree
+        uv run pipdeptree
 
     - name: Change the version file for scheduled TestPyPI upload
       if: github.event_name == 'schedule'
