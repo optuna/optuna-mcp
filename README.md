@@ -1,7 +1,9 @@
 # Optuna MCP Server
 
 [![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13-blue)](https://www.python.org)
+[![pypi](https://img.shields.io/pypi/v/optuna-mcp.svg)](https://pypi.python.org/pypi/optuna-mcp)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/optuna/optuna-mcp)
+[![Tests](https://github.com/optuna/optuna-mcp/actions/workflows/tests.yml/badge.svg)](https://github.com/optuna/optuna-mcp/actions/workflows/tests.yml)
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) server that automates optimization and anlysis using [Optuna](http://optuna.org).
 
