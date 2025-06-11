@@ -5,6 +5,7 @@ name: Publish distributions to PyPI or TestPyPI
 on:
   schedule:
     - cron: '0 15 * * SUN-THU'
+  workflow_dispatch:
   release:
     types:
       - published
@@ -63,14 +64,14 @@ jobs:
 
     - name: Publish distribution to TestPyPI
       # The following upload action cannot be executed in the forked repository.
-      if: (github.event_name == 'schedule') || (github.event_name == 'release')
+      if: (github.event_name == 'schedule') || (github.event_name == 'release') || (github.event_name == 'workflow_dispatch')
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         repository-url: https://test.pypi.org/legacy/
 
     - name: Publish distribution to PyPI
       # The following upload action cannot be executed in the forked repository.
-      if: github.event_name == 'release'
+      if: (github.event_name == 'release') || (github.event_name == 'workflow_dispatch')
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         # Temporary workaround to bypass Twine's bug with attestation support
