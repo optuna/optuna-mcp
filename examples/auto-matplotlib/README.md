@@ -35,7 +35,7 @@ The example works as follows:
 Please first install the dependencies for this example:
 
 ```shell
-$ pip install matplotlib numpy "mcp[cli]>=1.5.0"
+$ uv pip install matplotlib numpy "mcp[cli]>=1.5.0"
 ```
 
 The directory structure of this example should look like:
