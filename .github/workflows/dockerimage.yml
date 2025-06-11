@@ -1,9 +1,6 @@
 name: Build Docker Image
 
 on:
-  push:
-    branches:
-      - main
   release:
     types: [published]
   pull_request:
@@ -19,16 +16,13 @@ concurrency:
 
 env:
   DOCKER_HUB_BASE_NAME: optuna/optuna-mcp
+  PYTHON_VERSION: '3.12'
 
 jobs:
 
   dockerimage:
 
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        python_version: ['3.12']
 
     # This action cannot be executed in the forked repository.
     if: github.repository == 'optuna/optuna-mcp'
@@ -37,9 +31,9 @@ jobs:
 
     - name: Set ENV
       run: |
-        export TAG_NAME="py${{ matrix.python_version }}"
+        export TAG_NAME="py${PYTHON_VERSION}"
         if [ "${{ github.event_name }}" = 'release' ]; then
-          export TAG_NAME="${{ github.event.release.tag_name }}-${TAG_NAME}"
+          export TAG_NAME="${{ github.event.release.tag_name }}"
         fi
         echo "HUB_TAG=${DOCKER_HUB_BASE_NAME}:${TAG_NAME}" >> $GITHUB_ENV
 
@@ -50,7 +44,7 @@ jobs:
         else
           CACHE_FROM="--cache-from=${HUB_TAG}"
         fi
-        docker build ${CACHE_FROM} . --build-arg PYTHON_VERSION=${{ matrix.python_version }} --file Dockerfile --tag "${HUB_TAG}"
+        docker build ${CACHE_FROM} . --build-arg PYTHON_VERSION=${PYTHON_VERSION} --file Dockerfile --tag "${HUB_TAG}"
       env:
         DOCKER_BUILDKIT: 1
 
@@ -59,19 +53,11 @@ jobs:
         docker run "${HUB_TAG}" optuna-mcp -h
 
     - name: Login & Push to Docker Hub
-      if: ${{ github.event_name != 'pull_request' }}
-      env:
-        DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
-      run: |
-        echo "${DOCKER_HUB_TOKEN}" | docker login -u optunabot --password-stdin
-        docker push "${HUB_TAG}"
-
-    # Assume python_version is only 3.12.
-    - name: Tag and Push latest image
       if: ${{ github.event_name == 'release' }}
       env:
         DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
       run: |
         echo "${DOCKER_HUB_TOKEN}" | docker login -u optunabot --password-stdin
+        docker push "${HUB_TAG}"
         docker tag "${HUB_TAG}" "${DOCKER_HUB_BASE_NAME}:latest"
         docker push "${DOCKER_HUB_BASE_NAME}:latest"
