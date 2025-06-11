@@ -184,10 +184,10 @@ Here we present a simple example of optimizing the 2D-Sphere function, along wit
 | User prompt | Output in Claude |
 | - | - |
 | (Launch Claude Desktop) | <img alt="1" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-1.png" /> |
-| Please create an Optuna study named "Optimize-2D-Sphere" for minimization. | <img alt="1" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-2.png" /> |
-| Please suggest two float parameters x, y in [-1, 1]. | <img alt="2" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-3.png" /> |
-| Please report the objective value x\*\*2 + y\*\*2. To calculate the value, please use the JavaScript interpreter and do not round the values. | <img alt="3" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-4.png" /> |
-| Please suggest another parameter set and evaluate it. | <img alt="4" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-5.png" /> |
+| Please create an Optuna study named "Optimize-2D-Sphere" for minimization. | <img alt="2" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-2.png" /> |
+| Please suggest two float parameters x, y in [-1, 1]. | <img alt="3" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-3.png" /> |
+| Please report the objective value x\*\*2 + y\*\*2. To calculate the value, please use the JavaScript interpreter and do not round the values. | <img alt="4" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-4.png" /> |
+| Please suggest another parameter set and evaluate it. | <img alt="5" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-5.png" /> |
 | Please plot the optimization history so far. | <img alt="6" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-6.png" /> |
 
 ### Starting the Optuna Dashboard and Analyzing Optimization Results
