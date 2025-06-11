@@ -5,7 +5,7 @@
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) server that automates optimization and anlysis using [Optuna](http://optuna.org).
 
-<img width="840" alt="image" src="./examples/sphere2d/images/sphere2d-6.png" />
+<img width="840" alt="image" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-6.png" />
 
 ## Use Cases
 
@@ -183,12 +183,12 @@ Here we present a simple example of optimizing the 2D-Sphere function, along wit
 
 | User prompt | Output in Claude |
 | - | - |
-| (Launch Claude Desktop) | <img alt="1" src="examples/sphere2d/images/sphere2d-1.png" /> |
-| Please create an Optuna study named "Optimize-2D-Sphere" for minimization. | <img alt="1" src="examples/sphere2d/images/sphere2d-2.png" /> |
-| Please suggest two float parameters x, y in [-1, 1]. | <img alt="2" src="examples/sphere2d/images/sphere2d-3.png" /> |
-| Please report the objective value x\*\*2 + y\*\*2. To calculate the value, please use the JavaScript interpreter and do not round the values. | <img alt="3" src="examples/sphere2d/images/sphere2d-4.png" /> |
-| Please suggest another parameter set and evaluate it. | <img alt="4" src="examples/sphere2d/images/sphere2d-5.png" /> |
-| Please plot the optimization history so far. | <img alt="6" src="examples/sphere2d/images/sphere2d-6.png" /> |
+| (Launch Claude Desktop) | <img alt="1" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-1.png" /> |
+| Please create an Optuna study named "Optimize-2D-Sphere" for minimization. | <img alt="2" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-2.png" /> |
+| Please suggest two float parameters x, y in [-1, 1]. | <img alt="3" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-3.png" /> |
+| Please report the objective value x\*\*2 + y\*\*2. To calculate the value, please use the JavaScript interpreter and do not round the values. | <img alt="4" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-4.png" /> |
+| Please suggest another parameter set and evaluate it. | <img alt="5" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-5.png" /> |
+| Please plot the optimization history so far. | <img alt="6" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-6.png" /> |
 
 ### Starting the Optuna Dashboard and Analyzing Optimization Results
 
@@ -196,29 +196,29 @@ You can also start the [Optuna dashboard](https://github.com/optuna/optuna-dashb
 
 | User prompt | Output in Claude |
 | - | - |
-| Please launch the Optuna dashboard. | <img alt="7" src="examples/optuna-dashboard/images/optuna-dashboard-1.png" /> |
+| Please launch the Optuna dashboard. | <img alt="7" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/optuna-dashboard/images/optuna-dashboard-1.png" /> |
 
 By default, the Optuna dashboard will be launched on port 58080.
 You can access it by navigating to `http://localhost:58080` in your web browser as shown below:
-<img alt="8" src="examples/optuna-dashboard/images/optuna-dashboard-2.png" />
+<img alt="8" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/optuna-dashboard/images/optuna-dashboard-2.png" />
 
 Optuna dashboard provides various visualizations to analyze the optimization results, such as optimization history, parameter importances, and more.
 
 ### Optimizing the FFmpeg Encoding Parameters
 
-![ffmpeg-2](./examples/ffmpeg/images/demo-ffmpeg-2.png)
+![ffmpeg-2](https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/ffmpeg/images/demo-ffmpeg-2.png)
 
 This demo showcases how to use the Optuna MCP server to automatically find optimal FFmpeg encoding parameters. It optimizes x264 encoding options to maximize video quality (measured by the SSIM score) while keeping encoding time reasonable.
 
-Check out [examples/ffmpeg.md](./examples/ffmpeg/ffmpeg.md) for details.
+Check out [examples/ffmpeg.md](https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/ffmpeg/ffmpeg.md) for details.
 
 ### Optimizing the Cookie Recipe
 
-![cookie-recipe](./examples/cookie-recipe/images/result-table.png)
+![cookie-recipe](https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/cookie-recipe/images/result-table.png)
 
 In this example, we will optimize a cookie recipe, referencing the paper titled "[Bayesian Optimization for a Better Dessert](https://research.google/pubs/bayesian-optimization-for-a-better-dessert/)".
 
-Check out [examples/cookie-recipe](./examples/cookie-recipe/README.md) for details.
+Check out [examples/cookie-recipe](https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/cookie-recipe/README.md) for details.
 
 ## License
 
