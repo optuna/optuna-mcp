@@ -28,7 +28,7 @@ dependencies = [
     "pandas>=2.2.3",
     "plotly>=6.0.1",
     "torch>=2.7.0",
-    "bottle @ git+https://github.com/bottlepy/bottle.git@master",
+    "bottle",
 ]
 
 [project.scripts]
@@ -67,6 +67,7 @@ explicit = true
 torch = [
   { index = "pytorch-cpu" },
 ]
+bottle = { git = "https://github.com/bottlepy/bottle", rev = "master" }
 
 [tool.ruff]
 line-length = 99
