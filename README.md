@@ -184,6 +184,7 @@ Since MCP clients know the list of tools and the details of each tool, users do 
 - [Starting the Optuna dashboard and analyzing optimization results](#starting-the-optuna-dashboard-and-analyzing-optimization-results)
 - [Optimizing the FFmpeg encoding parameters](#optimizing-the-ffmpeg-encoding-parameters)
 - [Optimizing the Cookie Recipe](#optimizing-the-cookie-recipe)
+- [Optimizing the Matplotlib Configuration](#optimizing-the-matplotlib-configuration)
 
 ### Optimizing the 2D-Sphere Function
 
@@ -218,7 +219,7 @@ Optuna dashboard provides various visualizations to analyze the optimization res
 
 This demo showcases how to use the Optuna MCP server to automatically find optimal FFmpeg encoding parameters. It optimizes x264 encoding options to maximize video quality (measured by the SSIM score) while keeping encoding time reasonable.
 
-Check out [examples/ffmpeg.md](https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/ffmpeg/ffmpeg.md) for details.
+Check out [examples/ffmpeg.md](https://github.com/optuna/optuna-mcp/tree/main/examples/ffmpeg/ffmpeg.md) for details.
 
 ### Optimizing the Cookie Recipe
 
@@ -226,7 +227,21 @@ Check out [examples/ffmpeg.md](https://raw.githubusercontent.com/optuna/optuna-m
 
 In this example, we will optimize a cookie recipe, referencing the paper titled "[Bayesian Optimization for a Better Dessert](https://research.google/pubs/bayesian-optimization-for-a-better-dessert/)".
 
-Check out [examples/cookie-recipe](https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/cookie-recipe/README.md) for details.
+Check out [examples/cookie-recipe](https://github.com/optuna/optuna-mcp/tree/main/examples/cookie-recipe/README.md) for details.
+
+### Optimizing the Matplotlib Configuration
+
+<table>
+    <caption>Default and optimized figures by Optuna MCP.</caption>
+    <tr>
+        <td><img src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/auto-matplotlib/images/first-plot.png" alt=""></td>
+        <td><img src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/auto-matplotlib/images/best-plot.png" alt=""></td>
+    </tr>
+</table>
+
+This example optimizes a Matplotlib configuration.
+
+Check out [examples/auto-matplotlib](https://github.com/optuna/optuna-mcp/tree/main/examples/auto-matplotlib/README.md) for details.
 
 ## License
 
