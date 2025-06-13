@@ -228,6 +228,20 @@ In this example, we will optimize a cookie recipe, referencing the paper titled 
 
 Check out [examples/cookie-recipe](https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/cookie-recipe/README.md) for details.
 
+### Optimizing the Matplotlib Configuration
+
+<table>
+    <caption>Default and optimized figures by Optuna MCP.</caption>
+    <tr>
+        <td><img src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/auto-matplotlib/images/first-plot.png" alt=""></td>
+        <td><img src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/auto-matplotlib/images/best-plot.png" alt=""></td>
+    </tr>
+</table>
+
+This example optimizes a Matplotlib configuration.
+
+Check out [examples/auto-matplotlib](https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/auto-matplotlib/README.md) for details.
+
 ## License
 
 MIT License (see [LICENSE](./LICENSE)).
