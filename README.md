@@ -38,8 +38,6 @@ and add the following:
     "Optuna": {
       "command": "uvx",
       "args": [
-        "--from",
-        "git+https://github.com/optuna/optuna-mcp",
         "optuna-mcp"
       ]
     }
@@ -55,8 +53,6 @@ Additionally, you can specify the Optuna storage with the `--storage` argument t
     "Optuna": {
       "command": "uvx",
       "args": [
-        "--from",
-        "git+https://github.com/optuna/optuna-mcp",
         "optuna-mcp"
         "--storage",
         "sqlite:///optuna.db"
