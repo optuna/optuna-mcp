@@ -16,11 +16,11 @@ You can use the following input file to run FFmpeg:
 After submitting the above prompt, the LLM sets up the Optuna study, samples parameters for FFmpeg, executes FFmpeg, and repeats this process to find better encoding parameters, as shown below:
 
 
-![ffmpeg-1](../images/demo-ffmpeg-1.png)
+![ffmpeg-1](./images/demo-ffmpeg-1.png)
 
 When I executed this example, the LLM sampled 8 different encoding parameters and reported results as shown below:
 
-![ffmpeg-2](../images/demo-ffmpeg-2.png)
+![ffmpeg-2](./images/demo-ffmpeg-2.png)
 
 ### How to Set Up the MCP Server for FFmpeg
 
