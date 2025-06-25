@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/optuna/optuna-mcp)
 [![Tests](https://github.com/optuna/optuna-mcp/actions/workflows/tests.yml/badge.svg)](https://github.com/optuna/optuna-mcp/actions/workflows/tests.yml)
 
-A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) server that automates optimization and anlysis using [Optuna](http://optuna.org).
+A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) server that automates optimization and analysis using [Optuna](http://optuna.org).
 
 <img width="840" alt="image" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-6.png" />
 
@@ -215,7 +215,7 @@ Optuna dashboard provides various visualizations to analyze the optimization res
 
 This demo showcases how to use the Optuna MCP server to automatically find optimal FFmpeg encoding parameters. It optimizes x264 encoding options to maximize video quality (measured by the SSIM score) while keeping encoding time reasonable.
 
-Check out [examples/ffmpeg.md](https://github.com/optuna/optuna-mcp/tree/main/examples/ffmpeg/ffmpeg.md) for details.
+Check out [examples/ffmpeg](https://github.com/optuna/optuna-mcp/tree/main/examples/ffmpeg/README.md) for details.
 
 ### Optimizing the Cookie Recipe
 
