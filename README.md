@@ -7,6 +7,10 @@
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) server that automates optimization and analysis using [Optuna](http://optuna.org).
 
+<a href="https://glama.ai/mcp/servers/@optuna/optuna-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@optuna/optuna-mcp/badge" alt="Optuna Server MCP server" />
+</a>
+
 <img width="840" alt="image" src="https://raw.githubusercontent.com/optuna/optuna-mcp/main/examples/sphere2d/images/sphere2d-6.png" />
 
 ## Use Cases
@@ -242,4 +246,3 @@ Check out [examples/auto-matplotlib](https://github.com/optuna/optuna-mcp/tree/m
 ## License
 
 MIT License (see [LICENSE](./LICENSE)).
-
