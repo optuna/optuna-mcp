@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/optuna-optuna-mcp-badge.png)](https://mseep.ai/app/optuna-optuna-mcp)
+
 # Optuna MCP Server
 
 [![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13-blue)](https://www.python.org)
