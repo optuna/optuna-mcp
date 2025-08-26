@@ -10,7 +10,7 @@ on:
       - Dockerfile
       - pyproject.toml
   schedule:
-    - cron: '0 23 * * SUN-THU'
+    - cron: '0 23 * * SUN'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.run_number || github.ref }}
