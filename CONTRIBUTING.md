@@ -32,10 +32,10 @@ Please fill the placeholders of path to your uv binary and optuna-mcp directory:
         "--directory",
         "/PATH/TO/optuna-mcp",
         "run",
-        "optuna-mcp"
+        "optuna-mcp",
         "--storage",
         "sqlite:///optuna.db"
-      ],
+      ]
     }
   }
 }
