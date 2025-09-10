@@ -29,6 +29,7 @@ dependencies = [
     "plotly>=6.0.1",
     "torch>=2.7.0",
     "bottle>=0.13.4",
+    "fastmcp>=2.12.2",
 ]
 
 [project.scripts]
