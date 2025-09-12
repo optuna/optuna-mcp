@@ -10,7 +10,8 @@ from mcp.server.fastmcp import Image
 import optuna
 import optuna_dashboard
 import plotly
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 
 class OptunaMCP(FastMCP):
@@ -59,17 +60,32 @@ class TrialToAdd:
     user_attrs: dict[str, typing.Any] | None
     system_attrs: dict[str, typing.Any] | None
 
+
 class StudyInfo(BaseModel):
     study_name: str
-    sampler_name: typing.Literal["TPESampler", "NSGAIISampler", "RandomSampler", "GPSampler"] | None = Field(default=None, description="The name of the sampler used in the study, if available.") 
-    directions: list[typing.Literal["minimize", "maximize"]] | None = Field(default=None, description="The optimization directions for each objective, if available.")
+    sampler_name: (
+        typing.Literal["TPESampler", "NSGAIISampler", "RandomSampler", "GPSampler"] | None
+    ) = Field(default=None, description="The name of the sampler used in the study, if available.")
+    directions: list[typing.Literal["minimize", "maximize"]] | None = Field(
+        default=None, description="The optimization directions for each objective, if available."
+    )
+
 
 class TrialInfo(BaseModel):
     trial_number: int
-    params: dict[str, typing.Any] | None = Field(default = None, description="The parameter values suggested by the trial.")
-    values: list[float] | None = Field(default = None, description="The objective values of the trial, if available.")
-    user_attrs: dict[str, typing.Any] | None = Field(default = None, description="User-defined attributes for the trial, if any.")
-    system_attrs: dict[str, typing.Any] | None = Field(default = None, description="System-defined attributes for the trial, if any.")
+    params: dict[str, typing.Any] | None = Field(
+        default=None, description="The parameter values suggested by the trial."
+    )
+    values: list[float] | None = Field(
+        default=None, description="The objective values of the trial, if available."
+    )
+    user_attrs: dict[str, typing.Any] | None = Field(
+        default=None, description="User-defined attributes for the trial, if any."
+    )
+    system_attrs: dict[str, typing.Any] | None = Field(
+        default=None, description="System-defined attributes for the trial, if any."
+    )
+
 
 def register_tools(mcp: OptunaMCP) -> OptunaMCP:
     @mcp.tool()
@@ -94,7 +110,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         return StudyInfo(study_name=study_name)
 
     @mcp.tool()
-    def get_all_study_names() -> list[StudyInfo]:
+    def get_all_study_names() -> list[StudyInfo] | str:
         """Get all study names from the storage."""
         storage: str | optuna.storages.BaseStorage | None = None
         if mcp.study is not None:
@@ -108,7 +124,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         return [StudyInfo(study_name=name) for name in study_names]
 
     @mcp.tool()
-    def ask(search_space: dict) -> TrialInfo:
+    def ask(search_space: dict) -> TrialInfo | str:
         """Suggest new parameters using Optuna
 
         search_space must be a string that can be evaluated to a dictionary to specify Optuna's distributions.
@@ -149,7 +165,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         return TrialInfo(
             trial_number=trial_number,
             values=[values] if isinstance(values, float) else values,
-        )   
+        )
 
     @mcp.tool()
     def set_sampler(
@@ -267,13 +283,16 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         """Return trials located at the Pareto front in the study."""
         if mcp.study is None:
             raise ValueError("No study has been created. Please create a study first.")
-        return [TrialInfo(
-            trial_number=trial.number,
-            params=trial.params,
-            values=trial.values,
-            user_attrs=trial.user_attrs,
-            system_attrs=trial.system_attrs,
-        ) for trial in mcp.study.best_trials]
+        return [
+            TrialInfo(
+                trial_number=trial.number,
+                params=trial.params,
+                values=trial.values,
+                user_attrs=trial.user_attrs,
+                system_attrs=trial.system_attrs,
+            )
+            for trial in mcp.study.best_trials
+        ]
 
     def _create_trial(trial: TrialToAdd) -> optuna.trial.FrozenTrial:
         """Create a trial from the given parameters."""
