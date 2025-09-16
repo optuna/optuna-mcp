@@ -66,7 +66,7 @@ class StudyResponse(BaseModel):
     sampler_name: (
         typing.Literal["TPESampler", "NSGAIISampler", "RandomSampler", "GPSampler"] | None
     ) = Field(default=None, description="The name of the sampler used in the study, if available.")
-    directions: list[typing.Literal["minimize", "maximize"]] | None = Field(
+    directions: list[str] | None = Field(
         default=None, description="The optimization directions for each objective, if available."
     )
 

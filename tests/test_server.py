@@ -1,3 +1,4 @@
+# type: ignore
 from collections.abc import Generator
 from collections.abc import Sequence
 import json
@@ -5,7 +6,6 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
-from mcp.types import EmbeddedResource
 from mcp.types import ImageContent
 from mcp.types import TextContent
 import optuna
@@ -88,9 +88,7 @@ async def test_create_study(mcp: OptunaMCP) -> None:
 
 @pytest.mark.anyio
 async def test_get_all_study_names(mcp: OptunaMCP) -> None:
-    result: Sequence[TextContent | ImageContent | EmbeddedResource] = await mcp.call_tool(
-        "get_all_study_names", arguments={}
-    )
+    result = await mcp.call_tool("get_all_study_names", arguments={})
     assert len(result) == 2
     if mcp.storage is None:
         assert isinstance(result[0][0], TextContent)
