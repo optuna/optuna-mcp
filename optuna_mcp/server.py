@@ -541,7 +541,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         fig = optuna.visualization.plot_rank(mcp.study)
         return Image(data=plotly.io.to_image(fig), format="png")
 
-    @mcp.tool()
+    @mcp.tool(structured_output=True)
     def launch_optuna_dashboard(port: int = 58080) -> str:
         """Launch the Optuna dashboard"""
         storage: str | optuna.storages.BaseStorage | None = None
@@ -599,3 +599,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+mcp = OptunaMCP("Optuna")
+mcp = register_tools(mcp)
