@@ -16,9 +16,9 @@ import pytest
 
 from optuna_mcp.server import OptunaMCP
 from optuna_mcp.server import register_tools
-from optuna_mcp.server import TrialToAdd
 from optuna_mcp.server import StudyResponse
 from optuna_mcp.server import TrialResponse
+from optuna_mcp.server import TrialToAdd
 
 
 STORAGE_MODES: list[str] = ["inmemory", "sqlite"]
@@ -292,7 +292,9 @@ async def test_best_trials(mcp: OptunaMCP) -> None:
     assert isinstance(result, Sequence)
     assert len(result) == 2
     assert all(isinstance(result, TextContent) for result in result[0])
-    assert all(isinstance(TrialResponse(**result), TrialResponse) for result in result[1]["result"])
+    assert all(
+        isinstance(TrialResponse(**result), TrialResponse) for result in result[1]["result"]
+    )
 
 
 @pytest.mark.anyio
