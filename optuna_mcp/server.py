@@ -61,7 +61,7 @@ class TrialToAdd:
     system_attrs: dict[str, typing.Any] | None
 
 
-class StudyInfo(BaseModel):
+class StudyResponse(BaseModel):
     study_name: str
     sampler_name: (
         typing.Literal["TPESampler", "NSGAIISampler", "RandomSampler", "GPSampler"] | None
@@ -71,7 +71,7 @@ class StudyInfo(BaseModel):
     )
 
 
-class TrialInfo(BaseModel):
+class TrialResponse(BaseModel):
     trial_number: int
     params: dict[str, typing.Any] | None = Field(
         default=None, description="The parameter values suggested by the trial."
@@ -88,11 +88,11 @@ class TrialInfo(BaseModel):
 
 
 def register_tools(mcp: OptunaMCP) -> OptunaMCP:
-    @mcp.tool()
+    @mcp.tool(structured_output=True)
     def create_study(
         study_name: str,
         directions: list[typing.Literal["minimize", "maximize"]] | None = None,
-    ) -> StudyInfo:
+    ) -> StudyResponse:
         """Create a new Optuna study with the given study_name and directions.
 
         If the study already exists, it will be simply loaded.
@@ -107,10 +107,10 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         if mcp.storage is None:
             mcp.storage = mcp.study._storage
 
-        return StudyInfo(study_name=study_name)
+        return StudyResponse(study_name=study_name)
 
-    @mcp.tool()
-    def get_all_study_names() -> list[StudyInfo] | str:
+    @mcp.tool(structured_output=True)
+    def get_all_study_names() -> list[StudyResponse] | str:
         """Get all study names from the storage."""
         storage: str | optuna.storages.BaseStorage | None = None
         if mcp.study is not None:
@@ -121,10 +121,10 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
             return "No storage specified."
 
         study_names = optuna.get_all_study_names(storage)
-        return [StudyInfo(study_name=name) for name in study_names]
+        return [StudyResponse(study_name=name) for name in study_names]
 
-    @mcp.tool()
-    def ask(search_space: dict) -> TrialInfo | str:
+    @mcp.tool(structured_output=True)
+    def ask(search_space: dict) -> TrialResponse | str:
         """Suggest new parameters using Optuna
 
         search_space must be a string that can be evaluated to a dictionary to specify Optuna's distributions.
@@ -145,13 +145,13 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
 
         trial = mcp.study.ask(fixed_distributions=distributions)
 
-        return TrialInfo(
+        return TrialResponse(
             trial_number=trial.number,
             params=trial.params,
         )
 
-    @mcp.tool()
-    def tell(trial_number: int, values: float | list[float]) -> TrialInfo:
+    @mcp.tool(structured_output=True)
+    def tell(trial_number: int, values: float | list[float]) -> TrialResponse:
         """Report the result of a trial"""
         if mcp.study is None:
             raise ValueError("No study has been created. Please create a study first.")
@@ -162,15 +162,15 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
             state=optuna.trial.TrialState.COMPLETE,
             skip_if_finished=True,
         )
-        return TrialInfo(
+        return TrialResponse(
             trial_number=trial_number,
             values=[values] if isinstance(values, float) else values,
         )
 
-    @mcp.tool()
+    @mcp.tool(structured_output=True)
     def set_sampler(
         name: typing.Literal["TPESampler", "NSGAIISampler", "RandomSampler", "GPSampler"],
-    ) -> StudyInfo:
+    ) -> StudyResponse:
         """Set the sampler for the study.
         The sampler must be one of the following:
         - TPESampler
@@ -186,12 +186,12 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         if mcp.study is None:
             raise ValueError("No study has been created. Please create a study first.")
         mcp.study.sampler = sampler
-        return StudyInfo(
+        return StudyResponse(
             study_name=mcp.study.study_name,
             sampler_name=name,
         )
 
-    @mcp.tool()
+    @mcp.tool(structured_output=True)
     def set_trial_user_attr(trial_number: int, key: str, value: typing.Any) -> str:
         """Set user attributes for a trial"""
         if mcp.study is None:
@@ -204,8 +204,8 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         storage.set_trial_user_attr(trial_id, key, value)
         return f"User attribute {key} set to {json.dumps(value)} for trial {trial_number}"
 
-    @mcp.tool()
-    def get_trial_user_attrs(trial_number: int) -> TrialInfo:
+    @mcp.tool(structured_output=True)
+    def get_trial_user_attrs(trial_number: int) -> TrialResponse:
         """Get user attributes in a trial"""
         if mcp.study is None:
             raise ValueError("No study has been created. Please create a study first.")
@@ -215,12 +215,12 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         )
         trial = storage.get_trial(trial_id)
         # return f"User attributes in trial {trial_number}: {json.dumps(trial.user_attrs)}"
-        return TrialInfo(
+        return TrialResponse(
             trial_number=trial_number,
             user_attrs=trial.user_attrs,
         )
 
-    @mcp.tool()
+    @mcp.tool(structured_output=True)
     def set_metric_names(metric_names: list[str]) -> str:
         """Set metric_names. metric_names are labels used to distinguish what each objective value is.
 
@@ -234,25 +234,25 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         mcp.study.set_metric_names(metric_names)
         return f"metric_names set to {json.dumps(metric_names)}"
 
-    @mcp.tool()
+    @mcp.tool(structured_output=True)
     def get_metric_names() -> str:
         """Get metric_names"""
         if mcp.study is None:
             raise ValueError("No study has been created. Please create a study first.")
         return f"Metric names: {json.dumps(mcp.study.metric_names)}"
 
-    @mcp.tool()
-    def get_directions() -> StudyInfo:
+    @mcp.tool(structured_output=True)
+    def get_directions() -> StudyResponse:
         """Get the directions of the study."""
         if mcp.study is None:
             raise ValueError("No study has been created. Please create a study first.")
         directions = [d.name.lower() for d in mcp.study.directions]
-        return StudyInfo(
+        return StudyResponse(
             study_name=mcp.study.study_name,
             directions=directions,
         )
 
-    @mcp.tool()
+    @mcp.tool(structured_output=True)
     def get_trials() -> str:
         """Get all trials in a CSV format"""
         if mcp.study is None:
@@ -260,8 +260,8 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         csv_string = mcp.study.trials_dataframe().to_csv()
         return f"Trials: \n{csv_string}"
 
-    @mcp.tool()
-    def best_trial() -> TrialInfo:
+    @mcp.tool(structured_output=True)
+    def best_trial() -> TrialResponse:
         """Get the best trial
 
         This feature can only be used for single-objective optimization. If your study is multi-objective, use best_trials instead.
@@ -270,7 +270,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
             raise ValueError("No study has been created. Please create a study first.")
 
         trial = mcp.study.best_trial
-        return TrialInfo(
+        return TrialResponse(
             trial_number=trial.number,
             params=trial.params,
             values=trial.values,
@@ -278,13 +278,13 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
             system_attrs=trial.system_attrs,
         )
 
-    @mcp.tool()
-    def best_trials() -> list[TrialInfo]:
+    @mcp.tool(structured_output=True)
+    def best_trials() -> list[TrialResponse]:
         """Return trials located at the Pareto front in the study."""
         if mcp.study is None:
             raise ValueError("No study has been created. Please create a study first.")
         return [
-            TrialInfo(
+            TrialResponse(
                 trial_number=trial.number,
                 params=trial.params,
                 values=trial.values,
@@ -308,7 +308,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
             system_attrs=trial.system_attrs,
         )
 
-    @mcp.tool()
+    @mcp.tool(structured_output=True)
     def add_trial(trial: TrialToAdd) -> str:
         """Add a trial to the study."""
         if mcp.study is None:
@@ -316,7 +316,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         mcp.study.add_trial(_create_trial(trial))
         return "Trial was added."
 
-    @mcp.tool()
+    @mcp.tool(structured_output=True)
     def add_trials(trials: list[TrialToAdd]) -> str:
         """Add multiple trials to the study."""
         frozen_trials = [_create_trial(trial) for trial in trials]
