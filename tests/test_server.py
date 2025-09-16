@@ -96,7 +96,6 @@ async def test_get_all_study_names(mcp: OptunaMCP) -> None:
         assert isinstance(result[1], dict)
         assert result[1]["result"] == "No storage specified."
     else:
-        assert all(isinstance(result, StudyResponse) for result in result[0])
         assert result[0] == []
         assert isinstance(result[1], dict)
         assert result[1]["result"] == []
@@ -159,7 +158,7 @@ async def test_set_sampler(mcp: OptunaMCP, sampler_name: str) -> None:
     assert len(result) == 2
     assert isinstance(result[0][0], TextContent)
     assert isinstance(StudyResponse(**result[1]), StudyResponse)
-    assert all(sampler_name == json.loads(result.text)["sampler_name"] for result in result[0])
+    assert sampler_name == json.loads(result[0][0].text)["sampler_name"]
     assert sampler_name == result[1]["sampler_name"]
     assert isinstance(mcp.study.sampler, getattr(optuna.samplers, sampler_name))
 
@@ -251,7 +250,6 @@ async def test_get_trials(mcp: OptunaMCP) -> None:
     assert len(result) == 2
     assert isinstance(result[0][0], TextContent)
     assert isinstance(result[1], dict)
-    # assert isinstance(result[0], TextContent)
     lines_from_text = result[0][0].text.strip().split("\n")
     lines_from_dict = result[1]["result"].strip().split("\n")
 
@@ -290,9 +288,7 @@ async def test_best_trials(mcp: OptunaMCP) -> None:
     assert isinstance(result, Sequence)
     assert len(result) == 2
     assert isinstance(result[0][0], TextContent)
-    assert all(
-        isinstance(TrialResponse(**result), TrialResponse) for result in result[1]["result"]
-    )
+    assert isinstance(TrialResponse(**result[1]["result"][0]), TrialResponse)
 
 
 @pytest.mark.anyio

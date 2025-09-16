@@ -65,9 +65,9 @@ class StudyResponse(BaseModel):
     study_name: str
     sampler_name: (
         typing.Literal["TPESampler", "NSGAIISampler", "RandomSampler", "GPSampler"] | None
-    ) = Field(default=None, description="The name of the sampler used in the study, if available.")
+    ) = Field(default=None, description="The name of the sampler used in the study.")
     directions: list[str] | None = Field(
-        default=None, description="The optimization directions for each objective, if available."
+        default=None, description="The optimization directions for each objective."
     )
 
 
@@ -77,13 +77,13 @@ class TrialResponse(BaseModel):
         default=None, description="The parameter values suggested by the trial."
     )
     values: list[float] | None = Field(
-        default=None, description="The objective values of the trial, if available."
+        default=None, description="The objective values of the trial."
     )
     user_attrs: dict[str, typing.Any] | None = Field(
-        default=None, description="User-defined attributes for the trial, if any."
+        default=None, description="User-defined attributes for the trial."
     )
     system_attrs: dict[str, typing.Any] | None = Field(
-        default=None, description="System-defined attributes for the trial, if any."
+        default=None, description="System-defined attributes for the trial."
     )
 
 
@@ -214,7 +214,6 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
             mcp.study._study_id, trial_number
         )
         trial = storage.get_trial(trial_id)
-        # return f"User attributes in trial {trial_number}: {json.dumps(trial.user_attrs)}"
         return TrialResponse(
             trial_number=trial_number,
             user_attrs=trial.user_attrs,
@@ -599,6 +598,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-mcp = OptunaMCP("Optuna")
-mcp = register_tools(mcp)
