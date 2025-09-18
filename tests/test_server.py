@@ -1,4 +1,3 @@
-# type: ignore
 from collections.abc import Generator
 from collections.abc import Sequence
 import json
@@ -90,6 +89,8 @@ async def test_create_study(mcp: OptunaMCP) -> None:
 async def test_get_all_study_names(mcp: OptunaMCP) -> None:
     result = await mcp.call_tool("get_all_study_names", arguments={})
     assert len(result) == 2
+    assert isinstance(result, Sequence)
+    assert isinstance(result[0], list)
     if mcp.storage is None:
         assert isinstance(result[0][0], TextContent)
         assert result[0][0].text == "No storage specified."
@@ -115,6 +116,7 @@ async def test_ask(mcp: OptunaMCP, search_space: dict) -> None:
     result = await mcp.call_tool("ask", arguments={"search_space": search_space})
     assert isinstance(result, Sequence)
     assert len(result) == 2
+    assert isinstance(result[0], list)
     assert isinstance(result[0][0], TextContent)
     assert isinstance(TrialResponse(**result[1]["result"]), TrialResponse)
     assert len(mcp.study.trials) == 1
@@ -140,6 +142,7 @@ async def test_tell(mcp: OptunaMCP, directions: list[str], values: list[float]) 
     result = await mcp.call_tool("tell", arguments={"trial_number": t.number, "values": values})
     assert isinstance(result, Sequence)
     assert len(result) == 2
+    assert isinstance(result[0], list)
     assert isinstance(result[0][0], TextContent)
     assert isinstance(TrialResponse(**result[1]), TrialResponse)
     assert len(mcp.study.trials) == 1
@@ -156,6 +159,7 @@ async def test_set_sampler(mcp: OptunaMCP, sampler_name: str) -> None:
     result = await mcp.call_tool("set_sampler", arguments={"name": sampler_name})
     assert isinstance(result, Sequence)
     assert len(result) == 2
+    assert isinstance(result[0], list)
     assert isinstance(result[0][0], TextContent)
     assert isinstance(StudyResponse(**result[1]), StudyResponse)
     assert sampler_name == json.loads(result[0][0].text)["sampler_name"]
@@ -174,6 +178,7 @@ async def test_trial_user_attrs(mcp: OptunaMCP) -> None:
     result = await mcp.call_tool("get_trial_user_attrs", arguments={"trial_number": t.number})
     assert isinstance(result, Sequence)
     assert len(result) == 2
+    assert isinstance(result[0], list)
     assert isinstance(result[0][0], TextContent)
     assert isinstance(TrialResponse(**result[1]), TrialResponse)
     user_attrs_from_text = json.loads(result[0][0].text)["user_attrs"]
@@ -202,6 +207,7 @@ async def test_metric_names(mcp: OptunaMCP, metric_names: list[str]) -> None:
     result = await mcp.call_tool("get_metric_names", arguments={})
     assert isinstance(result, Sequence)
     assert len(result) == 2
+    assert isinstance(result[0], list)
     assert isinstance(result[0][0], TextContent)
     assert isinstance(result[1], dict)
     user_attrs_from_text = result[0][0].text
@@ -229,6 +235,7 @@ async def test_get_directions(mcp: OptunaMCP, directions: list[str]) -> None:
     result = await mcp.call_tool("get_directions", arguments={})
     assert isinstance(result, Sequence)
     assert len(result) == 2
+    assert isinstance(result[0], list)
     assert isinstance(result[0][0], TextContent)
     assert isinstance(StudyResponse(**result[1]), StudyResponse)
 
@@ -248,6 +255,7 @@ async def test_get_trials(mcp: OptunaMCP) -> None:
     result = await mcp.call_tool("get_trials", arguments={})
     assert isinstance(result, Sequence)
     assert len(result) == 2
+    assert isinstance(result[0], list)
     assert isinstance(result[0][0], TextContent)
     assert isinstance(result[1], dict)
     lines_from_text = result[0][0].text.strip().split("\n")
@@ -269,6 +277,7 @@ async def test_best_trial(mcp: OptunaMCP) -> None:
     result = await mcp.call_tool("best_trial", arguments={})
     assert isinstance(result, Sequence)
     assert len(result) == 2
+    assert isinstance(result[0], list)
     assert isinstance(result[0][0], TextContent)
     assert isinstance(TrialResponse(**result[1]), TrialResponse)
     assert json.loads(result[0][0].text)["values"] == [0.0]
@@ -287,6 +296,7 @@ async def test_best_trials(mcp: OptunaMCP) -> None:
     result = await mcp.call_tool("best_trials", arguments={})
     assert isinstance(result, Sequence)
     assert len(result) == 2
+    assert isinstance(result[0], list)
     assert isinstance(result[0][0], TextContent)
     assert isinstance(TrialResponse(**result[1]["result"][0]), TrialResponse)
 
@@ -521,6 +531,7 @@ async def test_launch_optuna_dashboard(
         result = await mcp.call_tool("launch_optuna_dashboard", arguments=arguments)
         assert isinstance(result, Sequence)
         assert len(result) == 2
+        assert isinstance(result[0], list)
         assert isinstance(result[0][0], TextContent)
         assert result[0][0].text.endswith(f":{expected_port}")
         assert isinstance(result[1], dict)
