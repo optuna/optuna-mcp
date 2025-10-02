@@ -2,6 +2,7 @@ from collections.abc import Generator
 from collections.abc import Sequence
 import json
 from pathlib import Path
+import typing
 from typing import Any
 from unittest.mock import patch
 
@@ -16,12 +17,14 @@ import pytest
 
 from optuna_mcp.server import OptunaMCP
 from optuna_mcp.server import register_tools
+from optuna_mcp.server import SamplerName
 from optuna_mcp.server import StudyResponse
 from optuna_mcp.server import TrialResponse
 from optuna_mcp.server import TrialToAdd
 
 
 STORAGE_MODES: list[str] = ["inmemory", "sqlite"]
+SAMPLER_NAME = typing.get_args(SamplerName)
 
 
 @pytest.fixture(params=STORAGE_MODES)
@@ -149,9 +152,7 @@ async def test_tell(mcp: OptunaMCP, directions: list[str], values: list[float]) 
     assert mcp.study.trials[0].values == values
 
 
-@pytest.mark.parametrize(
-    "sampler_name", ["TPESampler", "NSGAIISampler", "RandomSampler", "GPSampler"]
-)
+@pytest.mark.parametrize("sampler_name", SAMPLER_NAME)
 @pytest.mark.anyio
 async def test_set_sampler(mcp: OptunaMCP, sampler_name: str) -> None:
     await mcp.call_tool("create_study", arguments={"study_name": "test_study"})
@@ -209,14 +210,9 @@ async def test_metric_names(mcp: OptunaMCP, metric_names: list[str]) -> None:
     assert len(result) == 2
     assert isinstance(result[0], list)
     assert isinstance(result[0][0], TextContent)
-    assert isinstance(result[1], dict)
-    user_attrs_from_text = result[0][0].text
-    user_attrs_from_dict = result[1]["result"]
-
-    for user_attrs in (user_attrs_from_text, user_attrs_from_dict):
-        r = json.loads(":".join(user_attrs.split(":")[1:]).strip())
-        assert isinstance(r, list)
-        assert r == metric_names
+    assert isinstance(StudyResponse(**result[1]), StudyResponse)
+    assert metric_names == json.loads(result[0][0].text)["metric_names"]
+    assert metric_names == result[1]["metric_names"]
 
 
 @pytest.mark.parametrize(
@@ -254,18 +250,13 @@ async def test_get_trials(mcp: OptunaMCP) -> None:
     mcp.study.ask()
     result = await mcp.call_tool("get_trials", arguments={})
     assert isinstance(result, Sequence)
-    assert len(result) == 2
-    assert isinstance(result[0], list)
-    assert isinstance(result[0][0], TextContent)
-    assert isinstance(result[1], dict)
-    lines_from_text = result[0][0].text.strip().split("\n")
-    lines_from_dict = result[1]["result"].strip().split("\n")
-
-    for lines in (lines_from_text, lines_from_dict):
-        assert len(lines) == 3
-        assert lines[0] == ("Trials: ")
-        assert lines[1].startswith(",number")
-        assert lines[2].startswith("0,0")
+    assert len(result) == 1
+    assert isinstance(result[0], TextContent)
+    lines = result[0].text.strip().split("\n")
+    assert len(lines) == 3
+    assert lines[0] == ("Trials: ")
+    assert lines[1].startswith(",number")
+    assert lines[2].startswith("0,0")
 
 
 @pytest.mark.anyio

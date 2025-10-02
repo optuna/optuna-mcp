@@ -17,6 +17,9 @@ from pydantic import BaseModel
 from pydantic import Field
 
 
+SamplerName = typing.Literal["TPESampler", "NSGAIISampler", "RandomSampler", "GPSampler"]
+
+
 class OptunaMCP(FastMCP):
     def __init__(
         self, name: str, storage: str | None = None, *args: typing.Any, **kwargs: typing.Any
@@ -66,11 +69,14 @@ class TrialToAdd:
 
 class StudyResponse(BaseModel):
     study_name: str
-    sampler_name: (
-        typing.Literal["TPESampler", "NSGAIISampler", "RandomSampler", "GPSampler"] | None
-    ) = Field(default=None, description="The name of the sampler used in the study.")
-    directions: list[str] | None = Field(
+    sampler_name: SamplerName | None = Field(
+        default=None, description="The name of the sampler used in the study."
+    )
+    directions: list[typing.Literal["minimize", "maximize"]] | None = Field(
         default=None, description="The optimization directions for each objective."
+    )
+    metric_names: list[str] | None = Field(
+        default=None, description="The metric names for each objective."
     )
 
 
@@ -182,7 +188,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
 
     @mcp.tool(structured_output=True)
     def set_sampler(
-        name: typing.Literal["TPESampler", "NSGAIISampler", "RandomSampler", "GPSampler"],
+        name: SamplerName,
     ) -> StudyResponse:
         """Set the sampler for the study.
         The sampler must be one of the following:
@@ -250,7 +256,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         )
 
     @mcp.tool(structured_output=True)
-    def set_metric_names(metric_names: list[str]) -> str:
+    def set_metric_names(metric_names: list[str]) -> StudyResponse:
         """Set metric_names. metric_names are labels used to distinguish what each objective value is.
 
         Args:
@@ -265,12 +271,14 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
                     message="No study has been created. Please create a study first.",
                 )
             )
-
         mcp.study.set_metric_names(metric_names)
-        return f"metric_names set to {json.dumps(metric_names)}"
+        return StudyResponse(
+            study_name=mcp.study.study_name,
+            metric_names=metric_names,
+        )
 
     @mcp.tool(structured_output=True)
-    def get_metric_names() -> str:
+    def get_metric_names() -> StudyResponse:
         """Get metric_names"""
         if mcp.study is None:
             raise McpError(
@@ -280,7 +288,10 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
                 )
             )
 
-        return f"Metric names: {json.dumps(mcp.study.metric_names)}"
+        return StudyResponse(
+            study_name=mcp.study.study_name,
+            metric_names=mcp.study.metric_names,
+        )
 
     @mcp.tool(structured_output=True)
     def get_directions() -> StudyResponse:
@@ -299,7 +310,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
             directions=directions,
         )
 
-    @mcp.tool(structured_output=True)
+    @mcp.tool(structured_output=False)
     def get_trials() -> str:
         """Get all trials in a CSV format"""
         if mcp.study is None:
