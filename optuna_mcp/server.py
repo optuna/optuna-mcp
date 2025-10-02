@@ -18,6 +18,7 @@ from pydantic import Field
 
 
 SamplerName = typing.Literal["TPESampler", "NSGAIISampler", "RandomSampler", "GPSampler"]
+DirectionName = typing.Literal["minimize", "maximize"]
 
 
 class OptunaMCP(FastMCP):
@@ -72,7 +73,7 @@ class StudyResponse(BaseModel):
     sampler_name: SamplerName | None = Field(
         default=None, description="The name of the sampler used in the study."
     )
-    directions: list[typing.Literal["minimize", "maximize"]] | None = Field(
+    directions: list[DirectionName] | None = Field(
         default=None, description="The optimization directions for each objective."
     )
     metric_names: list[str] | None = Field(
@@ -100,7 +101,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
     @mcp.tool(structured_output=True)
     def create_study(
         study_name: str,
-        directions: list[typing.Literal["minimize", "maximize"]] | None = None,
+        directions: list[DirectionName] | None = None,
     ) -> StudyResponse:
         """Create a new Optuna study with the given study_name and directions.
 
@@ -307,7 +308,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         directions = [d.name.lower() for d in mcp.study.directions]
         return StudyResponse(
             study_name=mcp.study.study_name,
-            directions=typing.cast(list[typing.Literal["minimize", "maximize"]], directions),
+            directions=typing.cast(list[DirectionName], directions),
         )
 
     @mcp.tool(structured_output=False)
