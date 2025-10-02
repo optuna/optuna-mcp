@@ -307,7 +307,7 @@ def register_tools(mcp: OptunaMCP) -> OptunaMCP:
         directions = [d.name.lower() for d in mcp.study.directions]
         return StudyResponse(
             study_name=mcp.study.study_name,
-            directions=directions,
+            directions=typing.cast(list[typing.Literal["minimize", "maximize"]], directions),
         )
 
     @mcp.tool(structured_output=False)
