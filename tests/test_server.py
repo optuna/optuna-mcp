@@ -2,10 +2,11 @@ from collections.abc import Generator
 from collections.abc import Sequence
 import json
 from pathlib import Path
+import typing
 from typing import Any
 from unittest.mock import patch
 
-from mcp.types import EmbeddedResource
+from mcp.server.fastmcp.exceptions import ToolError
 from mcp.types import ImageContent
 from mcp.types import TextContent
 import optuna
@@ -16,10 +17,14 @@ import pytest
 
 from optuna_mcp.server import OptunaMCP
 from optuna_mcp.server import register_tools
+from optuna_mcp.server import SamplerName
+from optuna_mcp.server import StudyResponse
+from optuna_mcp.server import TrialResponse
 from optuna_mcp.server import TrialToAdd
 
 
 STORAGE_MODES: list[str] = ["inmemory", "sqlite"]
+SAMPLER_NAME = typing.get_args(SamplerName)
 
 
 @pytest.fixture(params=STORAGE_MODES)
@@ -86,15 +91,18 @@ async def test_create_study(mcp: OptunaMCP) -> None:
 
 @pytest.mark.anyio
 async def test_get_all_study_names(mcp: OptunaMCP) -> None:
-    result: Sequence[TextContent | ImageContent | EmbeddedResource] = await mcp.call_tool(
-        "get_all_study_names", arguments={}
-    )
-    assert len(result) == 1
-    assert isinstance(result[0], TextContent)
     if mcp.storage is None:
-        assert result[0].text == "No storage specified."
+        with pytest.raises(ToolError) as e:
+            await mcp.call_tool("get_all_study_names", arguments={})
+        assert "No storage specified" in str(e.value)
     else:
-        assert "[]" in result[0].text
+        result = await mcp.call_tool("get_all_study_names", arguments={})
+        assert len(result) == 2
+        assert isinstance(result, Sequence)
+        assert isinstance(result[0], list)
+        assert result[0] == []
+        assert isinstance(result[1], dict)
+        assert result[1]["result"] == []
 
 
 @pytest.mark.parametrize(
@@ -110,8 +118,10 @@ async def test_ask(mcp: OptunaMCP, search_space: dict) -> None:
     assert mcp.study is not None
     result = await mcp.call_tool("ask", arguments={"search_space": search_space})
     assert isinstance(result, Sequence)
-    assert len(result) == 1
-    assert isinstance(result[0], TextContent)
+    assert len(result) == 2
+    assert isinstance(result[0], list)
+    assert isinstance(result[0][0], TextContent)
+    assert isinstance(TrialResponse(**result[1]), TrialResponse)
     assert len(mcp.study.trials) == 1
     assert len(mcp.study.trials[0].params) == len(search_space)
     for key in search_space:
@@ -134,24 +144,27 @@ async def test_tell(mcp: OptunaMCP, directions: list[str], values: list[float]) 
     t = mcp.study.ask()
     result = await mcp.call_tool("tell", arguments={"trial_number": t.number, "values": values})
     assert isinstance(result, Sequence)
-    assert len(result) == 1
-    assert isinstance(result[0], TextContent)
+    assert len(result) == 2
+    assert isinstance(result[0], list)
+    assert isinstance(result[0][0], TextContent)
+    assert isinstance(TrialResponse(**result[1]), TrialResponse)
     assert len(mcp.study.trials) == 1
     assert mcp.study.trials[0].values == values
 
 
-@pytest.mark.parametrize(
-    "sampler_name", ["TPESampler", "NSGAIISampler", "RandomSampler", "GPSampler"]
-)
+@pytest.mark.parametrize("sampler_name", SAMPLER_NAME)
 @pytest.mark.anyio
 async def test_set_sampler(mcp: OptunaMCP, sampler_name: str) -> None:
     await mcp.call_tool("create_study", arguments={"study_name": "test_study"})
     assert mcp.study is not None
     result = await mcp.call_tool("set_sampler", arguments={"name": sampler_name})
     assert isinstance(result, Sequence)
-    assert len(result) == 1
-    assert isinstance(result[0], TextContent)
-    assert sampler_name in result[0].text
+    assert len(result) == 2
+    assert isinstance(result[0], list)
+    assert isinstance(result[0][0], TextContent)
+    assert isinstance(StudyResponse(**result[1]), StudyResponse)
+    assert sampler_name == json.loads(result[0][0].text)["sampler_name"]
+    assert sampler_name == result[1]["sampler_name"]
     assert isinstance(mcp.study.sampler, getattr(optuna.samplers, sampler_name))
 
 
@@ -165,11 +178,16 @@ async def test_trial_user_attrs(mcp: OptunaMCP) -> None:
     )
     result = await mcp.call_tool("get_trial_user_attrs", arguments={"trial_number": t.number})
     assert isinstance(result, Sequence)
-    assert len(result) == 1
-    assert isinstance(result[0], TextContent)
-    r = json.loads(":".join(result[0].text.split(":")[1:]).strip())
-    assert isinstance(r, dict)
-    assert r == {"abc": "def"}
+    assert len(result) == 2
+    assert isinstance(result[0], list)
+    assert isinstance(result[0][0], TextContent)
+    assert isinstance(TrialResponse(**result[1]), TrialResponse)
+    user_attrs_from_text = json.loads(result[0][0].text)["user_attrs"]
+    user_attrs_from_dict = result[1]["user_attrs"]
+
+    for r in (user_attrs_from_text, user_attrs_from_dict):
+        assert isinstance(r, dict)
+        assert r == {"abc": "def"}
 
 
 @pytest.mark.parametrize(
@@ -189,11 +207,12 @@ async def test_metric_names(mcp: OptunaMCP, metric_names: list[str]) -> None:
     await mcp.call_tool("set_metric_names", arguments={"metric_names": metric_names})
     result = await mcp.call_tool("get_metric_names", arguments={})
     assert isinstance(result, Sequence)
-    assert len(result) == 1
-    assert isinstance(result[0], TextContent)
-    r = json.loads(":".join(result[0].text.split(":")[1:]).strip())
-    assert isinstance(r, list)
-    assert r == metric_names
+    assert len(result) == 2
+    assert isinstance(result[0], list)
+    assert isinstance(result[0][0], TextContent)
+    assert isinstance(StudyResponse(**result[1]), StudyResponse)
+    assert metric_names == json.loads(result[0][0].text)["metric_names"]
+    assert metric_names == result[1]["metric_names"]
 
 
 @pytest.mark.parametrize(
@@ -211,11 +230,17 @@ async def test_get_directions(mcp: OptunaMCP, directions: list[str]) -> None:
     )
     result = await mcp.call_tool("get_directions", arguments={})
     assert isinstance(result, Sequence)
-    assert len(result) == 1
-    assert isinstance(result[0], TextContent)
-    r = json.loads(":".join(result[0].text.split(":")[1:]).strip())
-    assert isinstance(r, list)
-    assert r == directions
+    assert len(result) == 2
+    assert isinstance(result[0], list)
+    assert isinstance(result[0][0], TextContent)
+    assert isinstance(StudyResponse(**result[1]), StudyResponse)
+
+    directions_from_text = json.loads(result[0][0].text)["directions"]
+    directions_from_dict = result[1]["directions"]
+
+    for r in (directions_from_text, directions_from_dict):
+        assert isinstance(r, list)
+        assert r == directions
 
 
 @pytest.mark.anyio
@@ -242,9 +267,12 @@ async def test_best_trial(mcp: OptunaMCP) -> None:
     mcp.study.tell(t, [0.0])
     result = await mcp.call_tool("best_trial", arguments={})
     assert isinstance(result, Sequence)
-    assert len(result) == 1
-    assert isinstance(result[0], TextContent)
-    assert result[0].text.strip().split(" ")[-1] == "0.0"
+    assert len(result) == 2
+    assert isinstance(result[0], list)
+    assert isinstance(result[0][0], TextContent)
+    assert isinstance(TrialResponse(**result[1]), TrialResponse)
+    assert json.loads(result[0][0].text)["values"] == [0.0]
+    assert result[1]["values"] == [0.0]
 
 
 @pytest.mark.anyio
@@ -258,9 +286,10 @@ async def test_best_trials(mcp: OptunaMCP) -> None:
     mcp.study.tell(t, [0.0, 1.1])
     result = await mcp.call_tool("best_trials", arguments={})
     assert isinstance(result, Sequence)
-    assert len(result) == 1
-    assert isinstance(result[0], TextContent)
-    assert result[0].text.strip().endswith("]")
+    assert len(result) == 2
+    assert isinstance(result[0], list)
+    assert isinstance(result[0][0], TextContent)
+    assert isinstance(TrialResponse(**result[1]["result"][0]), TrialResponse)
 
 
 @pytest.mark.anyio
@@ -492,9 +521,12 @@ async def test_launch_optuna_dashboard(
         arguments = {} if port is None else {"port": port}
         result = await mcp.call_tool("launch_optuna_dashboard", arguments=arguments)
         assert isinstance(result, Sequence)
-        assert len(result) == 1
-        assert isinstance(result[0], TextContent)
-        assert result[0].text.endswith(f":{expected_port}")
+        assert len(result) == 2
+        assert isinstance(result[0], list)
+        assert isinstance(result[0][0], TextContent)
+        assert result[0][0].text.endswith(f":{expected_port}")
+        assert isinstance(result[1], dict)
+        assert result[1]["result"].endswith(f":{expected_port}")
 
         assert mcp.dashboard_thread_port is not None
         assert mcp.dashboard_thread_port[0] is not None
