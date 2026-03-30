@@ -90,6 +90,10 @@ You can also run the Optuna MCP server using Docker. Make sure you have Docker i
 }
 ```
 
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/optuna-optuna-mcp).
+
 ## Tools provided by Optuna MCP
 
 The Optuna MCP provides the following tools.
