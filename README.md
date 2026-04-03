@@ -81,7 +81,7 @@ You can also run the Optuna MCP server using Docker. Make sure you have Docker i
         "--net=host",
         "-v",
         "/PATH/TO/LOCAL/DIRECTORY/WHICH/INCLUDES/DB/FILE:/app/workspace",
-        "optuna/optuna-mcp:latest",
+        "ghcr.io/optuna/optuna-mcp:latest",
         "--storage",
         "sqlite:////app/workspace/optuna.db"
       ]
