@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DOCKER_HUB_BASE_NAME: optuna/optuna-mcp
+  GHCR_BASE_NAME: ghcr.io/optuna/optuna-mcp
 
 jobs:
 
@@ -42,8 +42,9 @@ jobs:
       if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
       uses: docker/login-action@v3
       with:
+        registry: ghcr.io
         username: optunabot
-        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -59,8 +60,8 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         tags: |
-          ${{ env.DOCKER_HUB_BASE_NAME }}:${{ env.TAG_NAME }}
-          ${{ env.DOCKER_HUB_BASE_NAME }}:latest
+          ${{ env.GHCR_BASE_NAME }}:${{ env.TAG_NAME }}
+          ${{ env.GHCR_BASE_NAME }}:latest
 
     - name: Build and push (Schedule)
       if: ${{ github.event_name == 'schedule' }}
@@ -70,7 +71,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         tags: |
-          ${{ env.DOCKER_HUB_BASE_NAME }}:latest
+          ${{ env.GHCR_BASE_NAME }}:latest
 
     - name: Build only (Pull Request)
       if: ${{ github.event_name == 'pull_request' }}
