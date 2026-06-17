@@ -24,6 +24,9 @@ jobs:
   dockerimage:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     # This action cannot be executed in the forked repository.
     if: github.repository == 'optuna/optuna-mcp'
